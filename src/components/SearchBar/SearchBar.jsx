@@ -1,5 +1,8 @@
 import { Formik, Form, Field } from "formik";
 import { Toaster, toast } from "react-hot-toast";
+import { TiZoom } from "react-icons/ti";
+import styles from "./SearchBar.module.css";
+
 
 export default function SearchBar({ onSearch }) {
   const notify = () => {
@@ -18,18 +21,19 @@ export default function SearchBar({ onSearch }) {
         actions.resetForm();
       }}
     >
-      <Form>
+      <Form className={styles.form}>
+      
+      <TiZoom className={styles.icon} />
+      
         <Field
           type="text"
           autoComplete="off"
           autoFocus
           placeholder="Search images and photos"
           name="query"
+          className={styles.input}
         />
-        <div>
-          <button type="submit">Search</button>
-          <Toaster />
-        </div>
+        <Toaster />
       </Form>
     </Formik>
   );

@@ -1,23 +1,21 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-import Modal from "react-modal";
-
-import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
-import ImageGallery from "./components/ImageGallery/ImageGallery.jsx";
-import ImageModal from "./components/ImageModal/ImageModal.jsx";
-import Loader from "./components/Loader/Loader.jsx";
-import LoadMoreBtn from "./components/LoadMoreBtn/LoadMoreBtn.jsx";
-import SearchBar from "./components/SearchBar/SearchBar.jsx";
 import { fetchPhotos } from "./gallery-api";
+import ImageGallery from "./components/ImageGallery/ImageGallery";
+import SearchBar from "./components/SearchBar/SearchBar";
+import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
+import Loader from "./components/Loader/Loader";
+import LoadMoreBtn from "./components/LoadMoreBtn/LoadMoreBtn";
+import ImageModal from "./components/ImageModal/ImageModal";
 
 function App() {
   const [images, setImages] = useState([]);
-  const [isloading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState("");
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const handleSearch = async (newQuery) => {
     setQuery(newQuery);
@@ -29,13 +27,12 @@ function App() {
     setPage(page + 1);
   };
 
-  const openModal = (imageUrl) => {
-    setSelectedImage(imageUrl);
+  const openModal = (image) => {
+    setSelectedImage(image.urls.regular);
     setModalIsOpen(true);
   };
 
   const closeModal = () => {
-    setSelectedImage("");
     setModalIsOpen(false);
   };
 
@@ -48,9 +45,7 @@ function App() {
         setError(false);
         setIsLoading(true);
         const data = await fetchPhotos(query, page);
-        setImages((prevImages) => {
-          return [...prevImages, ...data];
-        });
+        setImages((prevImages) => [...prevImages, ...data]);
       } catch (error) {
         setError(true);
       } finally {
@@ -70,19 +65,17 @@ function App() {
 
       <ErrorMessage error={error} />
 
-      <Loader isloading={isloading} />
+      <Loader isLoading={isLoading} />
 
       {images.length > 0 && (
         <LoadMoreBtn isLoadMore={true} onClick={handleLoadMore} />
       )}
 
-      <Modal
+      <ImageModal
+        imageUrl={selectedImage}
         isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="Image Modal"
-      >
-        <ImageModal imageUrl={selectedImage} onClose={closeModal} />
-      </Modal>
+        onClose={closeModal}
+      />
     </>
   );
 }
